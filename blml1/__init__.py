@@ -10,6 +10,8 @@ _T1 = TypeVar("_T1")
 
 class DataIteratorV1(Generic[_T1]):
     def __init__(self, xs: Sequence[_T1], random_state: int):
+        if not xs:
+            raise ValueError("`xs` should have at least one element.")
         self._xs = xs
         self._rng = random.Random(random_state)
         self._n = len(self._xs)
