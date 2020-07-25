@@ -21,6 +21,9 @@ setup(
     author="kshramt",
     packages=["blml1", "blml1._common"],
     install_requires=[],
+    extras_require=dict(
+        dev=["mypy", "pyflakes", "black", "pylint", "wheel", "twine", "pytype"]
+    ),
     classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)"],
     data_files=[(".", ["LICENSE.txt"])],
     zip_safe=True,
