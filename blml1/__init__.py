@@ -16,6 +16,9 @@ class DataIteratorV1(Generic[_T1]):
         self._i = -1
         self._inds = list(range(self._n))
 
+    def __iter__(self):
+        return self
+
     def __next__(self) -> _T1:
         self._i = (self._i + 1) % self._n
         if self._i == 0:
