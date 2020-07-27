@@ -1,4 +1,4 @@
-from typing import Generic, Sequence, TypeVar
+from typing import Final, Generic, Sequence, TypeVar
 import random
 
 from ._common import logger
@@ -35,3 +35,20 @@ class DataIterableV1(Generic[_T1]):
 
     def __iter__(self) -> DataIteratorV1[_T1]:
         return DataIteratorV1(self._xs, self._random_state)
+
+
+class LabelEncoderV1(Generic[_T1]):
+    UNK_INT: Final = 0
+
+    def __init__(self, xs: Sequence[_T1], unk_label: _T1):
+        self._unk_label: Final = unk_label
+        self._label_of_int: Final = [self._unk_label] + sorted(set(xs))
+        self._int_of_label: Final = {
+            x: i for i, x in enumerate(self._label_of_int) if i != self.UNK_INT
+        }
+
+    def encode(self, x: _T1) -> int:
+        return self._int_of_label.get(x, self.UNK_INT)
+
+    def decode(self, i: int) -> _T1:
+        return self._label_of_int[i]
