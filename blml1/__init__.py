@@ -46,6 +46,7 @@ class LabelEncoderV1(Generic[_T1]):
         self._int_of_label: Final = {
             x: i for i, x in enumerate(self._label_of_int) if i != self.UNK_INT
         }
+        self.n_classes: Final = len(self._label_of_int)
 
     def encode(self, x: _T1) -> int:
         return self._int_of_label.get(x, self.UNK_INT)
