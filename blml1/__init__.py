@@ -1,5 +1,10 @@
-from typing import Final, Generic, Sequence, TypeVar
+from typing import Any, Dict, Final, Generic, Mapping, Sequence, TypeVar
+import contextlib
 import random
+import time
+
+import lightgbm as lgb
+import optuna.integration.lightgbm
 
 from ._common import logger
 
@@ -61,3 +66,36 @@ def timing_v1(msg, fn=logger.info):
     yield
     t2 = time.monotonic()
     fn(msg, t2 - t1)
+
+
+def train_lightgbm_v1(
+    data_train: lgb.Dataset,
+    data_val: lgb.Dataset,
+    params: Mapping[str, Any],
+    kwargs: Mapping[str, Any],
+    params_hpo: Mapping[str, Any],
+    kwargs_hpo: Mapping[str, Any],
+) -> Dict[str, Any]:
+    params_best = dict()
+    tuning_history = []
+    with timing_v1("Run optuna.integration.lightgbm.train: %s", logger.debug):
+        model_hpo = optuna.integration.lightgbm.train(
+            params_hpo,
+            data_train,
+            valid_sets=data_val,
+            best_params=params_best,
+            tuning_history=tuning_history,
+            **kwargs_hpo,
+        )
+    logger.debug("model_hpo.best_score %s", model_hpo.best_score)
+    logger.debug("params_best %s", params_best)
+    params_fine = {**params_best, **params}
+    logger.debug("params_fine %s", params_fine)
+    with timing_v1("Run lgb.train: %s", logger.debug):
+        model_fine = lgb.train(params_fine, data_train, valid_sets=data_val, **kwargs)
+    return dict(
+        model=model_fine,
+        params=params_fine,
+        params_best=params_best,
+        tuning_history=tuning_history,
+    )
