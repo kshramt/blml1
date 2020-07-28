@@ -53,3 +53,11 @@ class LabelEncoderV1(Generic[_T1]):
 
     def decode(self, i: int) -> _T1:
         return self._label_of_int[i]
+
+
+@contextlib.contextmanager
+def timing_v1(msg, fn=logger.info):
+    t1 = time.monotonic()
+    yield
+    t2 = time.monotonic()
+    fn(msg, t2 - t1)
