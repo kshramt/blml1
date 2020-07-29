@@ -1,4 +1,14 @@
-from typing import Any, Dict, Final, Generic, Mapping, Sequence, TypeVar
+from typing import (
+    Any,
+    Dict,
+    Final,
+    Generator,
+    Generic,
+    Iterable,
+    Mapping,
+    Sequence,
+    TypeVar,
+)
 import contextlib
 import random
 import time
@@ -10,7 +20,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 _T1 = TypeVar("_T1")
 
 
@@ -114,3 +124,15 @@ def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequenc
         for i in range(2, n_xss):
             ret = np.intersect1d(ret, xss[i], assume_unique=assume_unique)
         return ret
+
+
+def batch_v1(xs: Iterable[_T1], n: int) -> Generator[_T1, None, None]:
+    if n < 1:
+        raise ValueError(f"`n` should be >= 1: {n}")
+    range_n = range(n)
+    it = iter(xs)
+    while True:
+        try:
+            yield [next(it) for _ in range_n]
+        except StopIteration:
+            return
