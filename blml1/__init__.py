@@ -4,6 +4,7 @@ import random
 import time
 
 import lightgbm as lgb
+import numpy as np
 import optuna.integration.lightgbm
 
 from ._common import logger
@@ -99,3 +100,17 @@ def train_lightgbm_v1(
         params_best=params_best,
         tuning_history=tuning_history,
     )
+
+
+def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequence[_T1]:
+    n_xss = len(xss)
+    if n_xss <= 0:
+        return []
+    elif n_xss == 1:
+        return xss[0]
+    else:
+        xss = sorted(xss, key=len)
+        ret = np.intersect1d(xss[0], xss[1], assume_unique=assume_unique)
+        for i in range(2, n_xss):
+            ret = np.intersect1d(ret, xss[i])
+        return ret
