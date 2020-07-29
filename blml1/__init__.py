@@ -10,7 +10,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 _T1 = TypeVar("_T1")
 
 
@@ -112,5 +112,5 @@ def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequenc
         xss = sorted(xss, key=len)
         ret = np.intersect1d(xss[0], xss[1], assume_unique=assume_unique)
         for i in range(2, n_xss):
-            ret = np.intersect1d(ret, xss[i])
+            ret = np.intersect1d(ret, xss[i], assume_unique=assume_unique)
         return ret
