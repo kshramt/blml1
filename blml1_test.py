@@ -38,7 +38,7 @@ class Blml1Test(unittest.TestCase):
             ),
             ((), []),
             ([], []),
-            (([1, 2],), [1, 2]),
+            ((np.array([1, 2]),), [1, 2]),
             ((np.array([1, 2]), np.array([3, 4])), []),
             ([np.array([1, 2]), np.array([3, 4])], []),
             ([np.array([1, 2]), np.array([2, 3, 4])], [2]),
