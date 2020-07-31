@@ -20,7 +20,12 @@ setup(
     url="https://github.com/kshramt/blml1",
     author="kshramt",
     packages=["blml1", "blml1._common"],
-    install_requires=["lightgbm >=2, <3", "numpy >=1, <2", "optuna >=2, <3"],
+    install_requires=[
+        "lightgbm >=2, <3",
+        "numpy >=1, <2",
+        "optuna >=2, <3",
+        "numba <1",
+    ],
     extras_require=dict(
         dev=["mypy", "pyflakes", "black", "pylint", "wheel", "twine", "pytype"]
     ),

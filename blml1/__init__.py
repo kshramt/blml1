@@ -14,13 +14,14 @@ import random
 import time
 
 import lightgbm as lgb
+import numba
 import numpy as np
 import optuna.integration.lightgbm
 
 from ._common import logger
 
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 _T1 = TypeVar("_T1")
 
 
@@ -136,3 +137,66 @@ def batch_v1(xs: Iterable[_T1], n: int) -> Generator[_T1, None, None]:
             yield [next(it) for _ in range_n]
         except StopIteration:
             return
+
+
+def intersect_sorted_arrays_v1(xss):
+    n_xss = len(xss)
+    if n_xss <= 0:
+        return []
+    elif n_xss == 1:
+        return xss[0]
+    else:
+        if len(xss[0]) <= 0:
+            return []
+        else:
+            return _intersect_sorted_arrays_v1(tuple(xss))
+
+
+@numba.njit(nogil=True, cache=True)
+def _intersect_sorted_arrays_v1(xss):
+    ret = []
+    ns = [len(xs) for xs in xss]
+    n_xss = len(xss)
+    i_xs_last = n_xss - 1
+    inds = np.zeros(n_xss, dtype=np.int64)
+    i_xs = 0
+    if ns[i_xs] <= inds[i_xs]:
+        return ret
+    x_max = xss[i_xs][inds[i_xs]]
+    while True:
+        i_xs += 1
+        inds[i_xs] = _skip_lt_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
+        if ns[i_xs] <= inds[i_xs]:
+            return ret
+        x = xss[i_xs][inds[i_xs]]
+        if x_max < x:
+            x_max = x
+            i_xs = -1
+        else:
+            if i_xs == i_xs_last:
+                ret.append(x_max)
+                i_xs = 0
+                inds[i_xs] = _skip_le_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
+                if ns[i_xs] <= inds[i_xs]:
+                    return ret
+                x_max = xss[i_xs][inds[i_xs]]
+
+
+@numba.njit(nogil=True, cache=True)
+def _skip_lt_v1(xs, i, n, x_max):
+    while i < n:
+        x = xs[i]
+        if x_max <= x:
+            break
+        i += 1
+    return i
+
+
+@numba.njit(nogil=True, cache=True)
+def _skip_le_v1(xs, i, n, x_max):
+    while i < n:
+        x = xs[i]
+        if x_max < x:
+            break
+        i += 1
+    return i
