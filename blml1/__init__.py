@@ -140,7 +140,7 @@ def batch_v1(xs: Iterable[_T1], n: int) -> Generator[List[_T1], None, None]:
             return
 
 
-def intersect_sorted_arrays_v1(xss):
+def intersect_sorted_arrays_v1(xss: Sequence[Sequence[_T1]]) -> Sequence[_T1]:
     n_xss = len(xss)
     if n_xss <= 0:
         return []
