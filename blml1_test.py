@@ -49,7 +49,7 @@ class Blml1Test(unittest.TestCase):
             ([np.array([], dtype=int), np.array([1, 2])], []),
             ([np.array([1, 2]), np.array([], dtype=int)], []),
         ):
-            self.assertEqual(blml1.intersect_sorted_arrays_v1(xss), expected)
+            self.assertEqual(list(blml1.intersect_sorted_arrays_v1(xss)), expected)
         rng = random.Random(42)
         for _ in range(800):
             xss = [

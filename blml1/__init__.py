@@ -22,7 +22,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.9.1"
+__version__ = "0.10.0"
 _T1 = TypeVar("_T1")
 
 
@@ -161,26 +161,26 @@ def _intersect_sorted_arrays_v1(xss):
     i_xs_last = n_xss - 1
     inds = np.zeros(n_xss, dtype=np.int64)
     i_xs = 0
-    if ns[i_xs] <= inds[i_xs]:
-        return ret
-    x_max = xss[i_xs][inds[i_xs]]
-    while True:
-        i_xs += 1
-        inds[i_xs] = _skip_lt_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
-        if ns[i_xs] <= inds[i_xs]:
-            return ret
-        x = xss[i_xs][inds[i_xs]]
-        if x_max < x:
-            x_max = x
-            i_xs = -1
-        else:
-            if i_xs == i_xs_last:
-                ret.append(x_max)
-                i_xs = 0
-                inds[i_xs] = _skip_le_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
-                if ns[i_xs] <= inds[i_xs]:
-                    return ret
-                x_max = xss[i_xs][inds[i_xs]]
+    if inds[i_xs] < ns[i_xs]:
+        x_max = xss[i_xs][inds[i_xs]]
+        while True:
+            i_xs += 1
+            inds[i_xs] = _skip_lt_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
+            if ns[i_xs] <= inds[i_xs]:
+                break
+            x = xss[i_xs][inds[i_xs]]
+            if x_max < x:
+                x_max = x
+                i_xs = -1
+            else:
+                if i_xs == i_xs_last:
+                    ret.append(x_max)
+                    i_xs = 0
+                    inds[i_xs] = _skip_le_v1(xss[i_xs], inds[i_xs], ns[i_xs], x_max)
+                    if ns[i_xs] <= inds[i_xs]:
+                        break
+                    x_max = xss[i_xs][inds[i_xs]]
+    return np.array(ret)
 
 
 @numba.njit(nogil=True, cache=True)
@@ -207,14 +207,13 @@ def _skip_le_v1(xs, i, n, x_max):
 def _uniq_sorted_array_v1(xs):
     ret = []
     n_xs = len(xs)
-    if n_xs == 0:
-        return ret
-    x = xs[0]
-    ret.append(x)
-    seen = x
-    for i in range(1, n_xs):
-        x = xs[i]
-        if x != seen:
-            ret.append(x)
-            seen = x
-    return ret
+    if 0 < n_xs:
+        x = xs[0]
+        ret.append(x)
+        seen = x
+        for i in range(1, n_xs):
+            x = xs[i]
+            if x != seen:
+                ret.append(x)
+                seen = x
+    return np.array(ret)
