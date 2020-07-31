@@ -54,7 +54,7 @@ class Blml1Test(unittest.TestCase):
         for _ in range(800):
             xss = [
                 np.array(
-                    sorted(set(rng.randint(0, 100) for _ in range(rng.randint(0, 20)))),
+                    sorted(rng.randint(0, 100) for _ in range(rng.randint(0, 20))),
                     dtype=int,
                 )
                 for _ in range(rng.randint(0, 7))

@@ -22,7 +22,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 _T1 = TypeVar("_T1")
 
 
@@ -145,7 +145,7 @@ def intersect_sorted_arrays_v1(xss):
     if n_xss <= 0:
         return []
     elif n_xss == 1:
-        return xss[0]
+        return _uniq_sorted_array_v1(xss[0])
     else:
         if len(xss[0]) <= 0:
             return []
@@ -201,3 +201,20 @@ def _skip_le_v1(xs, i, n, x_max):
             break
         i += 1
     return i
+
+
+@numba.njit(nogil=True, cache=True)
+def _uniq_sorted_array_v1(xs):
+    ret = []
+    n_xs = len(xs)
+    if n_xs == 0:
+        return ret
+    x = xs[0]
+    ret.append(x)
+    seen = x
+    for i in range(1, n_xs):
+        x = xs[i]
+        if x != seen:
+            ret.append(x)
+            seen = x
+    return ret
