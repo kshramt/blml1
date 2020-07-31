@@ -186,8 +186,7 @@ def _intersect_sorted_arrays_v1(xss):
 @numba.njit(nogil=True, cache=True)
 def _skip_lt_v1(xs, i, n, x_max):
     while i < n:
-        x = xs[i]
-        if x_max <= x:
+        if x_max <= xs[i]:
             break
         i += 1
     return i
@@ -196,8 +195,7 @@ def _skip_lt_v1(xs, i, n, x_max):
 @numba.njit(nogil=True, cache=True)
 def _skip_le_v1(xs, i, n, x_max):
     while i < n:
-        x = xs[i]
-        if x_max < x:
+        if x_max < xs[i]:
             break
         i += 1
     return i
