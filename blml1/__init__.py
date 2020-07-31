@@ -5,6 +5,7 @@ from typing import (
     Generator,
     Generic,
     Iterable,
+    List,
     Mapping,
     Sequence,
     TypeVar,
@@ -88,8 +89,8 @@ def train_lightgbm_v1(
     params_hpo: Mapping[str, Any],
     kwargs_hpo: Mapping[str, Any],
 ) -> Dict[str, Any]:
-    params_best = dict()
-    tuning_history = []
+    params_best: Dict[str, Any] = dict()
+    tuning_history: List[Any] = []
     with timing_v1("Run optuna.integration.lightgbm.train: %s", logger.debug):
         model_hpo = optuna.integration.lightgbm.train(
             params_hpo,
@@ -127,7 +128,7 @@ def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequenc
         return ret
 
 
-def batch_v1(xs: Iterable[_T1], n: int) -> Generator[_T1, None, None]:
+def batch_v1(xs: Iterable[_T1], n: int) -> Generator[List[_T1], None, None]:
     if n < 1:
         raise ValueError(f"`n` should be >= 1: {n}")
     range_n = range(n)
