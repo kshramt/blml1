@@ -11,6 +11,7 @@ from typing import (
     TypeVar,
 )
 import contextlib
+import itertools
 import random
 import time
 
@@ -128,16 +129,18 @@ def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequenc
         return ret
 
 
-def batch_v1(xs: Iterable[_T1], n: int) -> Generator[List[_T1], None, None]:
+def batch_v1(
+    xs: Iterable[_T1], n: int, drop_reminder=False
+) -> Generator[List[_T1], None, None]:
     if n < 1:
         raise ValueError(f"`n` should be >= 1: {n}")
-    range_n = range(n)
     it = iter(xs)
     while True:
-        try:
-            yield [next(it) for _ in range_n]
-        except StopIteration:
+        batch = list(itertools.islice(it, n))
+        n_batch = len(batch)
+        if (n_batch == 0) or (drop_reminder and (n_batch < n)):
             return
+        yield batch
 
 
 def intersect_sorted_arrays_v1(xss: Sequence[Sequence[_T1]]) -> Sequence[_T1]:
