@@ -148,7 +148,7 @@ def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequenc
 
 
 def batch_v1(
-    xs: Iterable[_T1], n: int, drop_reminder=False
+    xs: Iterable[_T1], n: int, drop_reminder: bool = False
 ) -> Generator[List[_T1], None, None]:
     if n < 1:
         raise ValueError(f"`n` should be >= 1: {n}")
