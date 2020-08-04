@@ -101,6 +101,10 @@ class CachedCallableV1:
     def set(k, v):
         _CachedCallableV1_CACHE_V1[k] = v
 
+    @staticmethod
+    def delete(k):
+        del _CachedCallableV1_CACHE_V1[k]
+
     def __init__(self, k):
         self._k = k
 
