@@ -23,8 +23,10 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 _T1 = TypeVar("_T1")
+
+_CachedCallableV1_CACHE_V1 = dict()
 
 
 class DataIteratorV1(Generic[_T1]):
@@ -90,6 +92,20 @@ class LabelEncoderV1(Generic[_T1]):
 
     def decode(self, i: int) -> _T1:
         return self._label_of_int[i]
+
+
+class CachedCallableV1:
+    __slots__ = ("_k",)
+
+    @staticmethod
+    def set(k, v):
+        _CachedCallableV1_CACHE_V1[k] = v
+
+    def __init__(self, k):
+        self._k = k
+
+    def __call__(self, *args, **kwargs):
+        return _CachedCallableV1_CACHE_V1[self._k](*args, **kwargs)
 
 
 @contextlib.contextmanager
