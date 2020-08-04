@@ -27,7 +27,16 @@ setup(
         "numba <1",
     ],
     extras_require=dict(
-        dev=["mypy", "pyflakes", "black", "pylint", "wheel", "twine", "pytype"]
+        dev=[
+            "black",
+            "ipython",
+            "mypy",
+            "pyflakes",
+            "pylint",
+            "pytype",
+            "twine",
+            "wheel",
+        ]
     ),
     classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)"],
     data_files=[(".", ["LICENSE.txt"])],
