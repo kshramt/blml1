@@ -12,6 +12,16 @@ import blml1
 
 
 class Blml1Test(unittest.TestCase):
+    def test_split_n_by_rs_v1(self):
+        for (n, rs), expected in (
+            ((100, (1, 1)), [slice(0, 50), slice(50, 100)]),
+            ((300, (1, 2)), [slice(0, 100), slice(100, 300)]),
+            ((10, (1, 100)), [slice(0, 1), slice(1, 10)]),
+            ((4, (1, 1, 1, 1)), [slice(0, 1), slice(1, 2), slice(2, 3), slice(3, 4)]),
+        ):
+            actual = blml1.split_n_by_rs_v1(n, rs)
+            self.assertEqual(expected, actual)
+
     def test_intersect_sorted_arrays_v1(self):
         for xss, expected in (
             (

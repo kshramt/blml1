@@ -23,7 +23,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
@@ -192,6 +192,27 @@ def intersect_sorted_arrays_v1(xss: Sequence[Sequence[_T1]]) -> Sequence[_T1]:
             return []
         else:
             return _intersect_sorted_arrays_v1(tuple(xss))
+
+
+def split_n_by_rs_v1(n, rs):
+    if any(r < 0 for r in rs):
+        raise ValueError(f"any(r < 0 for r in rs): {rs}")
+    total = sum(rs)
+    if total <= 0:
+        raise ValueError(f"total <= 0: {rs}")
+    if n < len(rs):
+        raise ValueError(f"n < len(rs): {n} {rs}")
+    i2s = np.rint(np.cumsum(rs).astype(np.float64) * (n / total)).astype(np.int64)
+    ret = []
+    i1 = 0
+    for i2 in i2s:
+        if i2 <= i1:
+            i2 = i1 + 1
+        if n < i2:
+            raise ValueError(f"n <= i2: {n} {rs} {i2s}")
+        ret.append(slice(i1, i2))
+        i1 = i2
+    return ret
 
 
 @numba.njit(nogil=True, cache=True)

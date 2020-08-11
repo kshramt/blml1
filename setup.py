@@ -36,6 +36,7 @@ setup(
             "pytype",
             "twine",
             "wheel",
+            "coverage",
         ]
     ),
     classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)"],
