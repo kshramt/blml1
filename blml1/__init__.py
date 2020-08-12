@@ -7,6 +7,7 @@ from typing import (
     Iterable,
     List,
     Mapping,
+    Optional,
     Sequence,
     TypeVar,
 )
@@ -23,7 +24,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.13.1"
+__version__ = "0.13.2"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
