@@ -24,7 +24,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.13.3"
+__version__ = "0.14.0"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
@@ -111,6 +111,33 @@ class CachedCallableV1:
 
     def __call__(self, *args, **kwargs):
         return _CachedCallableV1_CACHE_V1[self._k](*args, **kwargs)
+
+
+class AccKOfV1:
+    def __init__(self, k, inds_list):
+        """
+        Parameters:
+            group_ids: `group_ids` should be contiguous.
+
+        Example:
+
+            AccKOfV1(3, group_slices_of_contiguous_group_ids_v1([0, 0, 1, 1, 2, 2, 3, 4, 4, 4]))(y_true, y_pred)
+        """
+        self._k = k
+        self._inds_list = inds_list
+
+    def __call__(self, y_true, y_pred):
+        n_ok, n_true = self.count(y_true, y_pred)
+        return n_ok / n_true
+
+    def count(self, y_true, y_pred):
+        return (
+            sum(
+                in_top_k_v1(self._k, y_true[inds], y_pred[inds])
+                for inds in self._inds_list
+            ),
+            len(self._inds_list),
+        )
 
 
 @contextlib.contextmanager
@@ -206,6 +233,31 @@ def split_n_by_rs_v1(n, rs):
     return ret
 
 
+def in_top_k_v1(k, y_true, y_pred):
+    """
+    Parameters:
+        k: This parameter is 1-origin.
+    """
+    n = len(y_pred)
+    if n <= k:
+        return True
+    inds = np.where(np.equal(y_true, 1))[0]
+    n_inds = len(inds)
+    if n_inds <= 0:
+        return False
+    elif n_inds == 1:
+        i = n - (k + 1)
+        return np.partition(y_pred, i)[i] < y_true[inds[0]]
+    else:
+        raise ValueError(f"y_true contains > 1 positives: {y_true}")
+
+
+def group_slices_of_contiguous_group_ids_v1(group_ids):
+    if len(group_ids) <= 0:
+        return []
+    return list(_group_slices_of_contiguous_group_ids_v1(group_ids))
+
+
 @numba.njit(nogil=True, cache=True)
 def _intersect_sorted_arrays_v1(xss):
     ret = []
@@ -268,3 +320,20 @@ def _uniq_sorted_array_v1(xs):
                 ret.append(x)
                 seen = x
     return np.array(ret)
+
+
+def _group_slices_of_contiguous_group_ids_v1(group_ids):
+    n = len(group_ids)
+    group_id_prev = group_ids[0]
+    i1 = 0
+    i2 = 0
+    while True:
+        i2 += 1
+        if n <= i2:
+            break
+        group_id = group_ids[i2]
+        if group_id != group_id_prev:
+            yield slice(i1, i2)
+            group_id_prev = group_id
+            i1 = i2
+    yield slice(i1, i2)

@@ -12,6 +12,24 @@ import blml1
 
 
 class Blml1Test(unittest.TestCase):
+    def test_group_slices_of_contiguous_group_ids_v1(self):
+        group_ids = [0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2]
+        expected = [slice(0, 4), slice(4, 9), slice(9, 11)]
+        actual = blml1.group_slices_of_contiguous_group_ids_v1(group_ids)
+        self.assertEqual(expected, actual)
+
+    def test_AccKOfV1_1(self):
+        group_ids = [0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2]
+        y_true = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+        y_pred = [0, 1, 2, 3, 4, 4, 4, 4, 4, 1, 0]
+        expected_count = (2, 3)
+        expected_acc = expected_count[0] / expected_count[1]
+        acc_k_of = blml1.AccKOfV1(
+            3, blml1.group_slices_of_contiguous_group_ids_v1(group_ids)
+        )
+        self.assertEqual(expected_count, acc_k_of.count(y_true, y_pred))
+        self.assertEqual(expected_acc, acc_k_of(y_true, y_pred))
+
     def test_split_n_by_rs_v1(self):
         for (n, rs), expected in (
             ((100, (1, 1)), [slice(0, 50), slice(50, 100)]),
@@ -61,7 +79,7 @@ class Blml1Test(unittest.TestCase):
         ):
             self.assertEqual(list(blml1.intersect_sorted_arrays_v1(xss)), expected)
         rng = random.Random(42)
-        for _ in range(800):
+        for _ in range(400):
             xss = [
                 np.array(
                     sorted(rng.randint(0, 100) for _ in range(rng.randint(0, 20))),
