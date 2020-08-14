@@ -24,7 +24,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.14.0"
+__version__ = "0.14.1"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
@@ -247,9 +247,9 @@ def in_top_k_v1(k, y_true, y_pred):
         return False
     elif n_inds == 1:
         i = n - (k + 1)
-        return np.partition(y_pred, i)[i] < y_true[inds[0]]
+        return np.partition(y_pred, i)[i] < y_pred[inds[0]]
     else:
-        raise ValueError(f"y_true contains > 1 positives: {y_true}")
+        raise ValueError(f"y_true contains more than 1 positives: {y_true}")
 
 
 def group_slices_of_contiguous_group_ids_v1(group_ids):

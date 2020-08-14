@@ -30,6 +30,17 @@ class Blml1Test(unittest.TestCase):
         self.assertEqual(expected_count, acc_k_of.count(y_true, y_pred))
         self.assertEqual(expected_acc, acc_k_of(y_true, y_pred))
 
+        group_ids = [0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2]
+        y_true = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1]
+        y_pred = [x/10 for x in [0, 1, 2, 3, 4, 4, 4, 4, 4, 1, 0]]
+        expected_count = (2, 3)
+        expected_acc = expected_count[0] / expected_count[1]
+        acc_k_of = blml1.AccKOfV1(
+            3, blml1.group_slices_of_contiguous_group_ids_v1(group_ids)
+        )
+        self.assertEqual(expected_count, acc_k_of.count(y_true, y_pred))
+        self.assertEqual(expected_acc, acc_k_of(y_true, y_pred))
+
     def test_split_n_by_rs_v1(self):
         for (n, rs), expected in (
             ((100, (1, 1)), [slice(0, 50), slice(50, 100)]),
