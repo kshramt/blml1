@@ -24,7 +24,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.15.0"
+__version__ = "0.15.1"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
@@ -141,7 +141,7 @@ class AccKOfV1:
 
 
 class LgbFevalV1:
-    def __init__(self, fn, name: string, is_higher_better: bool, coef=1):
+    def __init__(self, fn, name: str, is_higher_better: bool, coef=1):
         self._fn = fn
         self._name = name
         self._is_higher_better = is_higher_better
