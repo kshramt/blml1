@@ -96,6 +96,21 @@ class LabelEncoderV1(Generic[_T1]):
 
 
 class CachedCallableV1:
+    """
+    Example:
+
+        import multiprocessing
+        import functools
+
+
+        def f(x, y):
+            return x + y
+
+
+        with multiprocessing.Pool(initializer=CachedCallableV1.set, initargs=("fn", functools.partial(f, 1))) as pool:
+            ys = pool.map(CachedCallableV1("fn"), [1, 2, 3, 4])
+    """
+
     __slots__ = ("_k",)
 
     @staticmethod
