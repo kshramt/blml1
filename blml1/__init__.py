@@ -24,7 +24,7 @@ import optuna.integration.lightgbm
 from ._common import logger
 
 
-__version__ = "0.15.2"
+__version__ = "0.16.0"
 _T1 = TypeVar("_T1")
 
 _CachedCallableV1_CACHE_V1 = dict()
@@ -188,9 +188,12 @@ def train_lightgbm_v1(
 ) -> Dict[str, Any]:
     with timing_v1("Run optuna.integration.lightgbm.train: %s", logger.debug):
         model_hpo = optuna.integration.lightgbm.train(
-            params_hpo, data_train, valid_sets=data_val, **kwargs_hpo,
+            params_hpo,
+            data_train,
+            valid_sets=data_val,
+            **kwargs_hpo,
         )
-    params_best = model_hpo.get_best_booster().params
+    params_best = model_hpo.params
     logger.debug("model_hpo.best_score %s", model_hpo.best_score)
     logger.debug("params_best %s", params_best)
 
@@ -198,7 +201,12 @@ def train_lightgbm_v1(
     logger.debug("params_fine %s", params_fine)
     with timing_v1("Run lgb.train: %s", logger.debug):
         model_fine = lgb.train(params_fine, data_train, valid_sets=data_val, **kwargs)
-    return dict(model=model_fine, params=params_fine, params_best=params_best)
+    return dict(
+        model=model_fine,
+        params=params_fine,
+        params_best=params_best,
+        model_hpo=model_hpo,
+    )
 
 
 def intersect1d_v1(xss: Sequence[Sequence[_T1]], assume_unique=False) -> Sequence[_T1]:

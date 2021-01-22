@@ -21,10 +21,11 @@ setup(
     author="kshramt",
     packages=["blml1", "blml1._common"],
     install_requires=[
-        "lightgbm >=2, <3",
-        "numpy >=1, <2",
-        "optuna >=2, <3",
-        "numba <1",
+        "lightgbm",
+        "numba",
+        "numpy",
+        "optuna",
+        "tensorflow",
     ],
     extras_require=dict(
         dev=[
@@ -33,6 +34,7 @@ setup(
             "mypy",
             "pyflakes",
             "pylint",
+            "pytest",
             "pytype",
             "twine",
             "wheel",
