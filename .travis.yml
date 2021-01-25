@@ -7,6 +7,6 @@ python:
 notifications:
     email: false
 install:
-  - pip install .
+  - pip install .[dev]
 script:
-  - python blml1_test.py
+  - pytest blml1_test.py
